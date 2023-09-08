@@ -1,6 +1,5 @@
 package com.sdww8591.image.service;
 
-import com.sdww8591.image.ImageApplicationTests;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

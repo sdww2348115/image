@@ -1,0 +1,62 @@
+2023-09-09T00:04:48.923+08:00  INFO 21868 --- [main] c.s.i.service.ImageProcessServiceTest    : Starting ImageProcessServiceTest using Java 17.0.8 with PID 21868 (started by sdww in C:\Users\sdww\Documents\projects\image)
+2023-09-09T00:04:48.925+08:00  INFO 21868 --- [main] c.s.i.service.ImageProcessServiceTest    : No active profile set, falling back to 1 default profile: "default"
+2023-09-09T00:04:49.702+08:00  INFO 21868 --- [main] c.s.image.service.ImageProcessService    : 开始初始化图形特征抽取模型
+2023-09-09T00:04:49.713+08:00  INFO 21868 --- [main] org.deeplearning4j.zoo.ZooModel          : Using cached model at C:\Users\sdww\.deeplearning4j\models\resnet50\resnet50_dl4j_inference.v3.zip
+2023-09-09T00:04:49.713+08:00  INFO 21868 --- [main] org.deeplearning4j.zoo.ZooModel          : Verifying download...
+2023-09-09T00:04:49.792+08:00  INFO 21868 --- [main] org.deeplearning4j.zoo.ZooModel          : Checksum local is 3914447815, expecting 3914447815
+2023-09-09T00:04:50.943+08:00  INFO 21868 --- [main] org.nd4j.linalg.factory.Nd4jBackend      : Loaded [CpuBackend] backend
+2023-09-09T00:04:51.850+08:00  INFO 21868 --- [main] org.nd4j.nativeblas.NativeOpsHolder      : Number of threads used for linear algebra: 6
+2023-09-09T00:04:51.852+08:00  INFO 21868 --- [main] o.n.l.cpu.nativecpu.CpuNDArrayFactory    : Binary level Generic x86 optimization level AVX/AVX2
+2023-09-09T00:04:51.883+08:00  INFO 21868 --- [main] org.nd4j.nativeblas.Nd4jBlas             : Number of threads used for OpenMP BLAS: 6
+2023-09-09T00:04:51.902+08:00  INFO 21868 --- [main] o.n.l.a.o.e.DefaultOpExecutioner         : Backend used: [CPU]; OS: [Windows 11]
+2023-09-09T00:04:51.902+08:00  INFO 21868 --- [main] o.n.l.a.o.e.DefaultOpExecutioner         : Cores: [12]; Memory: [7.9GB];
+2023-09-09T00:04:51.902+08:00  INFO 21868 --- [main] o.n.l.a.o.e.DefaultOpExecutioner         : Blas vendor: [OPENBLAS]
+2023-09-09T00:04:51.906+08:00  INFO 21868 --- [main] o.nd4j.linalg.cpu.nativecpu.CpuBackend   : Backend build information:
+ GCC: "12.1.0"
+STD version: 201103L
+DEFAULT_ENGINE: samediff::ENGINE_CPU
+HAVE_FLATBUFFERS
+HAVE_OPENBLAS
+2023-09-09T00:04:52.811+08:00  INFO 21868 --- [main] o.d.nn.graph.ComputationGraph            : Starting ComputationGraph with WorkspaceModes set to [training: ENABLED; inference: ENABLED], cacheMode set to [NONE]
+2023-09-09T00:04:52.875+08:00  INFO 21868 --- [main] c.s.image.service.ImageProcessService    : 模型加载成功
+2023-09-09T00:04:52.875+08:00  INFO 21868 --- [main] c.s.image.service.ImageProcessService    : 向量名赋值成功
+2023-09-09T00:04:53.363+08:00  INFO 21868 --- [pool-2-thread-1] c.sdww8591.image.service.MilvusService   : milvus client inited!
+2023-09-09T00:04:53.444+08:00  INFO 21868 --- [main] c.s.i.service.ImageProcessServiceTest    : Started ImageProcessServiceTest in 4.845 seconds (process running for 6.08)
+2023-09-09T00:04:54.190+08:00  INFO 21868 --- [main] c.s.image.service.ImageProcessService    : 开始进行图片特征抽取:C:\Users\sdww\IdeaProjects\milvus\IMG_20220410_174509_1.jpg
+2023-09-09T00:04:55.563+08:00  INFO 21868 --- [main] c.s.image.service.ImageProcessService    : 图片特征抽取成功
+2023-09-09T00:34:13.598+08:00  INFO 36472 --- [main] c.s.i.application.ImageApplicationTest   : Starting ImageApplicationTest using Java 17.0.8 with PID 36472 (started by sdww in C:\Users\sdww\Documents\projects\image)
+2023-09-09T00:34:13.600+08:00  INFO 36472 --- [main] c.s.i.application.ImageApplicationTest   : No active profile set, falling back to 1 default profile: "default"
+2023-09-09T00:34:14.360+08:00  INFO 36472 --- [main] c.s.image.service.ImageProcessService    : 开始初始化图形特征抽取模型
+2023-09-09T00:34:14.371+08:00  INFO 36472 --- [main] org.deeplearning4j.zoo.ZooModel          : Using cached model at C:\Users\sdww\.deeplearning4j\models\resnet50\resnet50_dl4j_inference.v3.zip
+2023-09-09T00:34:14.372+08:00  INFO 36472 --- [main] org.deeplearning4j.zoo.ZooModel          : Verifying download...
+2023-09-09T00:34:14.451+08:00  INFO 36472 --- [main] org.deeplearning4j.zoo.ZooModel          : Checksum local is 3914447815, expecting 3914447815
+2023-09-09T00:34:15.525+08:00  INFO 36472 --- [main] org.nd4j.linalg.factory.Nd4jBackend      : Loaded [CpuBackend] backend
+2023-09-09T00:34:16.436+08:00  INFO 36472 --- [main] org.nd4j.nativeblas.NativeOpsHolder      : Number of threads used for linear algebra: 6
+2023-09-09T00:34:16.438+08:00  INFO 36472 --- [main] o.n.l.cpu.nativecpu.CpuNDArrayFactory    : Binary level Generic x86 optimization level AVX/AVX2
+2023-09-09T00:34:16.465+08:00  INFO 36472 --- [main] org.nd4j.nativeblas.Nd4jBlas             : Number of threads used for OpenMP BLAS: 6
+2023-09-09T00:34:16.489+08:00  INFO 36472 --- [main] o.n.l.a.o.e.DefaultOpExecutioner         : Backend used: [CPU]; OS: [Windows 11]
+2023-09-09T00:34:16.489+08:00  INFO 36472 --- [main] o.n.l.a.o.e.DefaultOpExecutioner         : Cores: [12]; Memory: [7.9GB];
+2023-09-09T00:34:16.489+08:00  INFO 36472 --- [main] o.n.l.a.o.e.DefaultOpExecutioner         : Blas vendor: [OPENBLAS]
+2023-09-09T00:34:16.493+08:00  INFO 36472 --- [main] o.nd4j.linalg.cpu.nativecpu.CpuBackend   : Backend build information:
+ GCC: "12.1.0"
+STD version: 201103L
+DEFAULT_ENGINE: samediff::ENGINE_CPU
+HAVE_FLATBUFFERS
+HAVE_OPENBLAS
+2023-09-09T00:34:17.415+08:00  INFO 36472 --- [main] o.d.nn.graph.ComputationGraph            : Starting ComputationGraph with WorkspaceModes set to [training: ENABLED; inference: ENABLED], cacheMode set to [NONE]
+2023-09-09T00:34:17.488+08:00  INFO 36472 --- [main] c.s.image.service.ImageProcessService    : 模型加载成功
+2023-09-09T00:34:17.488+08:00  INFO 36472 --- [main] c.s.image.service.ImageProcessService    : 向量名赋值成功
+2023-09-09T00:34:17.495+08:00  INFO 36472 --- [pool-2-thread-1] c.sdww8591.image.service.MilvusService   : 检查milvus连接状态...
+2023-09-09T00:34:17.989+08:00  INFO 36472 --- [pool-2-thread-1] c.sdww8591.image.service.MilvusService   : milvus client inited!
+2023-09-09T00:34:17.989+08:00  INFO 36472 --- [pool-2-thread-1] c.sdww8591.image.service.MilvusService   : milvus连接状态检查完成
+2023-09-09T00:34:18.078+08:00  INFO 36472 --- [main] c.s.i.application.ImageApplicationTest   : Started ImageApplicationTest in 4.812 seconds (process running for 5.979)
+2023-09-09T00:34:18.830+08:00  INFO 36472 --- [main] com.sdww8591.image.util.FileUtils        : 开始计算文件MD5值:IMG_20220410_174509_1.jpg
+2023-09-09T00:34:18.864+08:00  INFO 36472 --- [main] com.sdww8591.image.util.FileUtils        : 文件MD5值计算完成
+2023-09-09T00:34:18.864+08:00  INFO 36472 --- [main] c.s.image.service.ImageProcessService    : 开始进行图片特征抽取
+2023-09-09T00:34:20.081+08:00  INFO 36472 --- [main] c.s.image.service.ImageProcessService    : 图片特征抽取成功
+2023-09-09T00:34:20.087+08:00  INFO 36472 --- [main] i.m.client.AbstractMilvusGrpcClient      : InsertParam{collectionName='yangyang', partitionName='', rowCount=1, columnFields+[Field{fieldName='name', row_count=1}, Field{fieldName='path', row_count=1}, Field{fieldName='vector', row_count=1}]}
+2023-09-09T00:34:20.088+08:00  INFO 36472 --- [main] i.m.client.AbstractMilvusGrpcClient      : DescribeCollectionParam(databaseName=null, collectionName=yangyang)
+2023-09-09T00:34:45.748+08:00  INFO 36472 --- [main] c.sdww8591.image.service.MilvusService   : 插入图片成功！ id：int_id {
+  data: 444119500244957017
+}
+

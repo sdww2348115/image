@@ -1,6 +1,10 @@
 package com.sdww8591.image.service;
 
+import com.google.common.base.Preconditions;
+import com.sdww8591.image.domain.Image;
+import com.sdww8591.image.util.FileUtils;
 import jakarta.annotation.PostConstruct;
+import lombok.Cleanup;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.datavec.image.loader.NativeImageLoader;
@@ -35,14 +39,29 @@ public class ImageProcessService {
         log.info("向量名赋值成功");
     }
 
+    public Image buildImageFromFile(String path) {
+
+        File file = new File(path);
+        Preconditions.checkArgument(file.exists(), "文件不存在:" + path);
+
+        return Image.builder()
+                .name(file.getName())
+                .path(file.getPath())
+                .md5(FileUtils.calculateMD5(file))
+                .vector(extractImageVector(file))
+                .build();
+    }
+
     @SneakyThrows
-    public float[] extractImageVector(String path) {
+    public float[] extractImageVector(File img) {
+        log.info("开始进行图片特征抽取");
+
         NativeImageLoader loader = new NativeImageLoader(224, 224, 3);
         // 加载文件到内存，生成INDArray
-        File img = new File(path);
         INDArray image = loader.asMatrix(img);
 
         INDArray features = pretrainedNet.feedForward(image, false).get(vertexName);
+        log.info("图片特征抽取成功");
         return features.toFloatVector();
     }
 

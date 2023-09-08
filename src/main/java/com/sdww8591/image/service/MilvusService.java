@@ -1,15 +1,19 @@
 package com.sdww8591.image.service;
 
 import cn.hutool.json.JSONUtil;
+import com.google.common.primitives.Floats;
+import com.sdww8591.image.domain.Image;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.common.utils.JacksonUtils;
 import io.milvus.grpc.CheckHealthResponse;
 import io.milvus.grpc.DataType;
 import io.milvus.grpc.DescribeIndexResponse;
+import io.milvus.grpc.MutationResult;
 import io.milvus.param.*;
 import io.milvus.param.collection.CreateCollectionParam;
 import io.milvus.param.collection.FieldType;
 import io.milvus.param.collection.HasCollectionParam;
+import io.milvus.param.dml.InsertParam;
 import io.milvus.param.index.CreateIndexParam;
 import io.milvus.param.index.DescribeIndexParam;
 import jakarta.annotation.PostConstruct;
@@ -18,6 +22,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.json.Json;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +47,24 @@ public class MilvusService {
     @PostConstruct
     public void initMilvusServiceClient() {
         new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(this::checkAndRefreshClient, 0, 1, TimeUnit.MINUTES);
+    }
+
+    public void insertImage2Milvus(Image image) {
+
+        List<InsertParam.Field> multiVectors = new ArrayList<>();
+        multiVectors.add(new InsertParam.Field("name", Collections.singletonList(image.getName())));
+        multiVectors.add(new InsertParam.Field("path", Collections.singletonList(image.getPath())));
+        multiVectors.add(new InsertParam.Field("vector", Collections.singletonList(Floats.asList(image.getVector()))));
+
+        R<MutationResult> insertResult = serviceClient.insert(InsertParam.newBuilder()
+                .withCollectionName(collectionName)
+                .withFields(multiVectors)
+                .build());
+        if (insertResult.getStatus() == R.Status.Success.getCode()) {
+
+            image.setId(insertResult.getData().getIDs().getIntId().getData(0));
+            log.info("插入图片成功！ id：{}", insertResult.getData().getIDs().toString());
+        }
     }
 
     /**
@@ -110,9 +135,11 @@ public class MilvusService {
     }
 
     private void checkAndRefreshClient() {
+        log.info("检查milvus连接状态...");
         if (Objects.isNull(serviceClient) || !checkClientHealth(serviceClient)) {
             initClient();
         }
+        log.info("milvus连接状态检查完成");
     }
 
     private Boolean checkClientHealth(MilvusServiceClient client) {

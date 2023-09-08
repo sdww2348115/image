@@ -1,0 +1,26 @@
+2023-09-09T00:03:50.634+08:00  INFO 21412 --- [main] c.s.i.service.ImageProcessServiceTest    : Starting ImageProcessServiceTest using Java 17.0.8 with PID 21412 (started by sdww in C:\Users\sdww\Documents\projects\image)
+2023-09-09T00:03:50.636+08:00  INFO 21412 --- [main] c.s.i.service.ImageProcessServiceTest    : No active profile set, falling back to 1 default profile: "default"
+2023-09-09T00:03:51.571+08:00  INFO 21412 --- [main] c.s.image.service.ImageProcessService    : 开始初始化图形特征抽取模型
+2023-09-09T00:03:51.589+08:00  INFO 21412 --- [main] org.deeplearning4j.zoo.ZooModel          : Using cached model at C:\Users\sdww\.deeplearning4j\models\resnet50\resnet50_dl4j_inference.v3.zip
+2023-09-09T00:03:51.589+08:00  INFO 21412 --- [main] org.deeplearning4j.zoo.ZooModel          : Verifying download...
+2023-09-09T00:03:51.688+08:00  INFO 21412 --- [main] org.deeplearning4j.zoo.ZooModel          : Checksum local is 3914447815, expecting 3914447815
+2023-09-09T00:03:52.854+08:00  INFO 21412 --- [main] org.nd4j.linalg.factory.Nd4jBackend      : Loaded [CpuBackend] backend
+2023-09-09T00:03:53.817+08:00  INFO 21412 --- [main] org.nd4j.nativeblas.NativeOpsHolder      : Number of threads used for linear algebra: 6
+2023-09-09T00:03:53.818+08:00  INFO 21412 --- [main] o.n.l.cpu.nativecpu.CpuNDArrayFactory    : Binary level Generic x86 optimization level AVX/AVX2
+2023-09-09T00:03:53.846+08:00  INFO 21412 --- [main] org.nd4j.nativeblas.Nd4jBlas             : Number of threads used for OpenMP BLAS: 6
+2023-09-09T00:03:53.862+08:00  INFO 21412 --- [main] o.n.l.a.o.e.DefaultOpExecutioner         : Backend used: [CPU]; OS: [Windows 11]
+2023-09-09T00:03:53.863+08:00  INFO 21412 --- [main] o.n.l.a.o.e.DefaultOpExecutioner         : Cores: [12]; Memory: [7.9GB];
+2023-09-09T00:03:53.863+08:00  INFO 21412 --- [main] o.n.l.a.o.e.DefaultOpExecutioner         : Blas vendor: [OPENBLAS]
+2023-09-09T00:03:53.866+08:00  INFO 21412 --- [main] o.nd4j.linalg.cpu.nativecpu.CpuBackend   : Backend build information:
+ GCC: "12.1.0"
+STD version: 201103L
+DEFAULT_ENGINE: samediff::ENGINE_CPU
+HAVE_FLATBUFFERS
+HAVE_OPENBLAS
+2023-09-09T00:03:54.810+08:00  INFO 21412 --- [main] o.d.nn.graph.ComputationGraph            : Starting ComputationGraph with WorkspaceModes set to [training: ENABLED; inference: ENABLED], cacheMode set to [NONE]
+2023-09-09T00:03:54.883+08:00  INFO 21412 --- [main] c.s.image.service.ImageProcessService    : 模型加载成功
+2023-09-09T00:03:54.883+08:00  INFO 21412 --- [main] c.s.image.service.ImageProcessService    : 向量名赋值成功
+2023-09-09T00:03:55.427+08:00  INFO 21412 --- [pool-2-thread-1] c.sdww8591.image.service.MilvusService   : milvus client inited!
+2023-09-09T00:03:55.512+08:00  INFO 21412 --- [main] c.s.i.service.ImageProcessServiceTest    : Started ImageProcessServiceTest in 5.214 seconds (process running for 6.527)
+2023-09-09T00:03:56.222+08:00  INFO 21412 --- [main] c.s.image.service.ImageProcessService    : 开始进行图片特征抽取:C:\Users\sdww\IdeaProjects\milvus\IMG_20220410_174509_1.jpg
+2023-09-09T00:03:57.569+08:00  INFO 21412 --- [main] c.s.image.service.ImageProcessService    : 图片特征抽取成功
