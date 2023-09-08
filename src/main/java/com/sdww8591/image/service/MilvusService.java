@@ -1,20 +1,23 @@
 package com.sdww8591.image.service;
 
+import cn.hutool.json.JSONUtil;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.common.utils.JacksonUtils;
 import io.milvus.grpc.CheckHealthResponse;
 import io.milvus.grpc.DataType;
-import io.milvus.param.ConnectParam;
-import io.milvus.param.R;
-import io.milvus.param.RpcStatus;
+import io.milvus.grpc.DescribeIndexResponse;
+import io.milvus.param.*;
 import io.milvus.param.collection.CreateCollectionParam;
 import io.milvus.param.collection.FieldType;
 import io.milvus.param.collection.HasCollectionParam;
+import io.milvus.param.index.CreateIndexParam;
+import io.milvus.param.index.DescribeIndexParam;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.json.Json;
 import java.util.Objects;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -81,6 +84,28 @@ public class MilvusService {
                         .withDataType(DataType.FloatVector)
                         .withDimension(1000)
                         .build())
+                .build();
+    }
+
+    public void checkCollectionIndex() {
+        // 查询索引 返回0代表未创建索引需要创建索引
+        R<DescribeIndexResponse> indexResult = serviceClient.describeIndex(DescribeIndexParam.newBuilder()
+                .withCollectionName(collectionName).build());
+        if (indexResult.getStatus() == R.Status.IndexNotExist.getCode()) {
+            // 创建索引
+            R<RpcStatus> resp = serviceClient.createIndex(createCollectionIndex(collectionName));
+            log.info("创建索引:{}", resp.getMessage());
+        }
+    }
+    private CreateIndexParam createCollectionIndex(String collectionName) {
+        return CreateIndexParam.newBuilder()
+                .withCollectionName(collectionName)
+                // 需要加索引的字段名称
+                .withFieldName("vector")
+                .withMetricType(MetricType.IP)
+                .withSyncMode(Boolean.FALSE)
+                .withIndexType(IndexType.IVF_FLAT)
+                .withExtraParam(JSONUtil.createObj().set("nlist", "1024").toString())
                 .build();
     }
 

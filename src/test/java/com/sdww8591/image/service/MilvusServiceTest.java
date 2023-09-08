@@ -15,4 +15,9 @@ public class MilvusServiceTest {
     public void initCollection() {
         milvusService.initCollection();
     }
+
+    @Test
+    public void initIndex() {
+        milvusService.checkCollectionIndex();
+    }
 }
