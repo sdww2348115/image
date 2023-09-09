@@ -8,6 +8,9 @@ import lombok.Getter;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
@@ -53,4 +56,9 @@ public enum CollectionField {
 
     private FieldType fieldType;
     private Field domainField;
+
+    public static List<String> FIELD_NAME = Arrays.stream(CollectionField.values())
+            .map(CollectionField::getFieldType)
+            .map(FieldType::getName)
+            .collect(Collectors.toList());
 }

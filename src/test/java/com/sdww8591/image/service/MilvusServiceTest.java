@@ -1,8 +1,11 @@
 package com.sdww8591.image.service;
 
+import com.sdww8591.image.util.FileUtils;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.io.File;
 
 @SpringBootTest
 public class MilvusServiceTest {

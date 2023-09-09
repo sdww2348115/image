@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Slf4j
 public class FileUtils {
@@ -46,5 +48,28 @@ public class FileUtils {
 
         log.info("文件MD5值计算完成");
         return hexString.toString();
+    }
+
+    /**
+     * 递归遍历目录
+     * @param directory
+     * @param consumer
+     */
+    public static void traverseDirectory(File directory, Consumer<File> consumer) {
+        if (!directory.isDirectory()) {
+            consumer.accept(directory);
+        }
+
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    // 如果是子目录，递归遍历
+                    traverseDirectory(file, consumer);
+                } else {
+                    consumer.accept(file);
+                }
+            }
+        }
     }
 }

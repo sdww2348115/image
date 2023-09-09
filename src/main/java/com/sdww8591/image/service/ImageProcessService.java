@@ -43,10 +43,10 @@ public class ImageProcessService {
     }
 
     public Image buildImageFromFile(String path) {
+        return buildImageFromFile(new File(path));
+    }
 
-        File file = new File(path);
-        Preconditions.checkArgument(file.exists(), "文件不存在:" + path);
-
+    public Image buildImageFromFile(File file) {
         return Image.builder()
                 .name(file.getName())
                 .path(file.getPath())

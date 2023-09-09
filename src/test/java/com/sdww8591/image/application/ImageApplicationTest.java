@@ -1,6 +1,7 @@
 package com.sdww8591.image.application;
 
 import com.sdww8591.image.TestBootStrap;
+import com.sdww8591.image.util.FileUtils;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +16,9 @@ public class ImageApplicationTest extends TestBootStrap {
 
     @Test
     public void insertImage2Milvus() {
-        imageApplication.insertImage2Milvus("C:\\Users\\sdww\\IdeaProjects\\milvus\\IMG_20220410_174509_1.jpg");
+
+        String dataDirPath = "/Users/sdww/Downloads/ccx";
+
+        FileUtils.traverseDirectory(new File(dataDirPath), imageApplication::insertImage2Milvus);
     }
 }

@@ -1,23 +1,22 @@
 package com.sdww8591.image.service;
 
 import cn.hutool.json.JSONUtil;
+import com.clearspring.analytics.util.Lists;
 import com.google.common.primitives.Floats;
 import com.sdww8591.image.domain.CollectionField;
 import com.sdww8591.image.domain.Image;
 import io.milvus.client.MilvusServiceClient;
+import io.milvus.common.clientenum.ConsistencyLevelEnum;
 import io.milvus.common.utils.JacksonUtils;
-import io.milvus.grpc.CheckHealthResponse;
-import io.milvus.grpc.DataType;
-import io.milvus.grpc.DescribeIndexResponse;
-import io.milvus.grpc.MutationResult;
+import io.milvus.grpc.*;
 import io.milvus.param.*;
-import io.milvus.param.collection.CreateCollectionParam;
-import io.milvus.param.collection.DropCollectionParam;
-import io.milvus.param.collection.FieldType;
-import io.milvus.param.collection.HasCollectionParam;
+import io.milvus.param.collection.*;
 import io.milvus.param.dml.InsertParam;
+import io.milvus.param.dml.SearchParam;
 import io.milvus.param.index.CreateIndexParam;
 import io.milvus.param.index.DescribeIndexParam;
+import io.milvus.response.QueryResultsWrapper;
+import io.milvus.response.SearchResultsWrapper;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +24,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.json.Json;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -45,6 +41,9 @@ public class MilvusService {
 
     @Value("${milvus.collection}")
     private String collectionName;
+
+    @Value("${milvus.nprobe}")
+    private Integer nprobe;
 
     private MilvusServiceClient serviceClient = null;
 
@@ -78,6 +77,55 @@ public class MilvusService {
             image.setId(insertResult.getData().getIDs().getIntId().getData(0));
             log.info("插入图片成功！ id：{}", insertResult.getData().getIDs().toString());
         }
+    }
+
+    public void flushIndex() {
+        // 刷新索引
+        R<FlushResponse> resp = serviceClient.flush(FlushParam.newBuilder()
+                .addCollectionName(collectionName)
+                .withSyncFlush(false)
+                .build());
+
+        if (Objects.equals(resp.getStatus(), R.Status.Success.getCode())) {
+            log.info("刷新索引成功");
+        }
+    }
+
+    @SneakyThrows
+    public List<Image> searchSemilarImage(Image image, int topk, int pageNo, int pageSize) {
+
+        int offset = (pageNo - 1) * pageSize;
+        int limit = pageSize;
+
+        R<SearchResults> searchResult = serviceClient.search(SearchParam.newBuilder()
+                .withCollectionName(collectionName)
+                // 设置返回最相似的图片数量
+                .withTopK(topk)
+                .withConsistencyLevel(ConsistencyLevelEnum.STRONG)
+                .withMetricType(MetricType.IP)
+                // 返回的字段信息
+                .withOutFields(CollectionField.FIELD_NAME)
+                // 设置向量字段的名称
+                .withVectorFieldName("vector")
+                .withVectors(Collections.singletonList(image.getVector()))
+                // nprobe是指在搜索时需要遍历的最大倒排列表数，它的值越大，搜索速度越慢，但搜索精度越高
+                // offset 偏移量，limit 每页查询数量，offset 从0开始
+                .withParams(JSONUtil.createObj().set("nprobe", nprobe).set("offset", offset).set("limit", limit).toString())
+                .build());
+
+        if (searchResult.getStatus() != R.Status.Success.getCode()) {
+            throw new RuntimeException("请求异常，错误码:" + searchResult.getStatus());
+        }
+
+        SearchResultsWrapper resultsWrapper = new SearchResultsWrapper(searchResult.getData().getResults());
+        if (!searchResult.getData().getResults().getIds().hasIntId()) {
+            return Collections.emptyList();
+        }
+
+        List<Image> resultList = resultsWrapper.getRowRecords().stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+        return resultList;
     }
 
     /**
@@ -125,7 +173,9 @@ public class MilvusService {
         if (indexResult.getStatus() == R.Status.IndexNotExist.getCode()) {
             // 创建索引
             R<RpcStatus> resp = serviceClient.createIndex(createCollectionIndex(collectionName));
-            log.info("创建索引:{}", resp.getMessage());
+            if (resp.getStatus().equals(R.Status.Success.getCode())) {
+                log.info("创建索引成功");
+            }
         }
     }
     private CreateIndexParam createCollectionIndex(String collectionName) {
@@ -170,4 +220,17 @@ public class MilvusService {
         log.info("milvus client inited!");
     }
 
+    @SneakyThrows
+    private Image toDomain(QueryResultsWrapper.RowRecord record) {
+        if (Objects.isNull(record)) {
+            return null;
+        }
+
+        Image domain = Image.builder().build();
+        for (CollectionField field: CollectionField.values()) {
+            Object val = record.get(field.getFieldType().getName());
+            field.getDomainField().set(domain, val);
+        }
+        return domain;
+    }
 }
