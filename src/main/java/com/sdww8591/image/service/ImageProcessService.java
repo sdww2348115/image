@@ -1,6 +1,7 @@
 package com.sdww8591.image.service;
 
 import com.google.common.base.Preconditions;
+import com.google.common.primitives.Floats;
 import com.sdww8591.image.domain.Image;
 import com.sdww8591.image.util.FileUtils;
 import jakarta.annotation.PostConstruct;
@@ -16,6 +17,8 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -53,7 +56,7 @@ public class ImageProcessService {
     }
 
     @SneakyThrows
-    public float[] extractImageVector(File img) {
+    public List<Float> extractImageVector(File img) {
         log.info("开始进行图片特征抽取");
 
         NativeImageLoader loader = new NativeImageLoader(224, 224, 3);
@@ -62,7 +65,7 @@ public class ImageProcessService {
 
         INDArray features = pretrainedNet.feedForward(image, false).get(vertexName);
         log.info("图片特征抽取成功");
-        return features.toFloatVector();
+        return Floats.asList(features.toFloatVector());
     }
 
 }

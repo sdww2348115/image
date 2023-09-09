@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -17,5 +19,5 @@ public class Image {
 
     private String md5;
 
-    private float[] vector;
+    private List<Float> vector;
 }

@@ -2,6 +2,7 @@ package com.sdww8591.image.service;
 
 import cn.hutool.json.JSONUtil;
 import com.google.common.primitives.Floats;
+import com.sdww8591.image.domain.CollectionField;
 import com.sdww8591.image.domain.Image;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.common.utils.JacksonUtils;
@@ -11,13 +12,16 @@ import io.milvus.grpc.DescribeIndexResponse;
 import io.milvus.grpc.MutationResult;
 import io.milvus.param.*;
 import io.milvus.param.collection.CreateCollectionParam;
+import io.milvus.param.collection.DropCollectionParam;
 import io.milvus.param.collection.FieldType;
 import io.milvus.param.collection.HasCollectionParam;
 import io.milvus.param.dml.InsertParam;
 import io.milvus.param.index.CreateIndexParam;
 import io.milvus.param.index.DescribeIndexParam;
 import jakarta.annotation.PostConstruct;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -49,12 +53,21 @@ public class MilvusService {
         new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(this::checkAndRefreshClient, 0, 1, TimeUnit.MINUTES);
     }
 
+    @SneakyThrows
     public void insertImage2Milvus(Image image) {
 
         List<InsertParam.Field> multiVectors = new ArrayList<>();
-        multiVectors.add(new InsertParam.Field("name", Collections.singletonList(image.getName())));
-        multiVectors.add(new InsertParam.Field("path", Collections.singletonList(image.getPath())));
-        multiVectors.add(new InsertParam.Field("vector", Collections.singletonList(Floats.asList(image.getVector()))));
+        for (CollectionField collectionField: CollectionField.values()) {
+            Object value = collectionField.getDomainField().get(image);
+            if (Objects.nonNull(value)) {
+                multiVectors.add(new InsertParam.Field(collectionField.getFieldType().getName(), Collections.singletonList(value)));
+            }
+        }
+
+        if (CollectionUtils.isEmpty(multiVectors)) {
+            log.warn("空白对象无法插入");
+            return;
+        }
 
         R<MutationResult> insertResult = serviceClient.insert(InsertParam.newBuilder()
                 .withCollectionName(collectionName)
@@ -85,31 +98,24 @@ public class MilvusService {
      * 以下为自定义字段，必须存在一个FloatVector类型字段，必须设置主键，没有可以用自增
      */
     private CreateCollectionParam createCollection(String collectionName){
-        return CreateCollectionParam.newBuilder()
+        CreateCollectionParam.Builder builder = CreateCollectionParam.newBuilder()
+                .withCollectionName(collectionName);
+
+        for (CollectionField collectionField: CollectionField.values()) {
+            builder.addFieldType(collectionField.getFieldType());
+        }
+        return builder.build();
+    }
+
+    public void deleteCollection() {
+        DropCollectionParam dropCollectionParam = DropCollectionParam.newBuilder()
                 .withCollectionName(collectionName)
-                // id 主键 必须有一个主键，也可以自动生成主键使用withAutoID(true)
-                .addFieldType(FieldType.newBuilder()
-                        .withPrimaryKey(true)
-                        .withName("id")
-                        .withDataType(DataType.Int64)
-                        .withAutoID(true)
-                        .build())
-                .addFieldType(FieldType.newBuilder()
-                        .withName("name")
-                        .withDataType(DataType.VarChar)
-                        .withMaxLength(512)
-                        .build())
-                .addFieldType(FieldType.newBuilder()
-                        .withName("path")
-                        .withDataType(DataType.VarChar)
-                        .withMaxLength(2046)
-                        .build())
-                .addFieldType(FieldType.newBuilder()
-                        .withName("vector")
-                        .withDataType(DataType.FloatVector)
-                        .withDimension(1000)
-                        .build())
                 .build();
+
+        R<RpcStatus> resp = serviceClient.dropCollection(dropCollectionParam);
+        if (resp.getStatus() == R.Status.Success.getCode()) {
+            log.info("集合:{}删除成功", collectionName);
+        }
     }
 
     public void checkCollectionIndex() {
