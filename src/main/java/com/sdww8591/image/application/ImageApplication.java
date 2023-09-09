@@ -2,6 +2,7 @@ package com.sdww8591.image.application;
 
 import com.google.common.primitives.Floats;
 import com.sdww8591.image.domain.Image;
+import com.sdww8591.image.domain.SearchResult;
 import com.sdww8591.image.service.ImageProcessService;
 import com.sdww8591.image.service.MilvusService;
 import io.milvus.grpc.MutationResult;
@@ -35,6 +36,14 @@ public class ImageApplication {
         milvusService.insertImage2Milvus(image);
 
         log.info("完成图片插入");
+    }
+
+    public List<SearchResult> search(File file, Integer topK, Integer pageNo, Integer pageSize) {
+
+        log.info("开始构建图片领域对象, 文件名:{}", file.getName());
+        Image image = imageProcessService.buildImageFromFile(file);
+
+        return milvusService.searchSemilarImage(image, topK, pageNo, pageSize);
     }
 
 }

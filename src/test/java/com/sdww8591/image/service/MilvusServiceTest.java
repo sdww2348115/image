@@ -27,4 +27,9 @@ public class MilvusServiceTest {
     public void deleteCollection() {
         milvusService.deleteCollection();
     }
+
+    @Test
+    public void flushIndex() {
+        milvusService.flushIndex();
+    }
 }

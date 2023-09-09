@@ -1,13 +1,11 @@
 package com.sdww8591.image.service;
 
 import cn.hutool.json.JSONUtil;
-import com.clearspring.analytics.util.Lists;
-import com.google.common.primitives.Floats;
 import com.sdww8591.image.domain.CollectionField;
 import com.sdww8591.image.domain.Image;
+import com.sdww8591.image.domain.SearchResult;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.common.clientenum.ConsistencyLevelEnum;
-import io.milvus.common.utils.JacksonUtils;
 import io.milvus.grpc.*;
 import io.milvus.param.*;
 import io.milvus.param.collection.*;
@@ -92,7 +90,10 @@ public class MilvusService {
     }
 
     @SneakyThrows
-    public List<Image> searchSemilarImage(Image image, int topk, int pageNo, int pageSize) {
+    public List<SearchResult> searchSemilarImage(Image image, int topk, int pageNo, int pageSize) {
+        log.info("开始执行加载集合");
+        localCollection();
+        log.info("加载集合完成");
 
         int offset = (pageNo - 1) * pageSize;
         int limit = pageSize;
@@ -122,10 +123,21 @@ public class MilvusService {
             return Collections.emptyList();
         }
 
-        List<Image> resultList = resultsWrapper.getRowRecords().stream()
-                .map(this::toDomain)
+        List<SearchResult> resultList = resultsWrapper.getRowRecords().stream()
+                .map(this::toResult)
                 .collect(Collectors.toList());
+        log.info("搜索完成");
         return resultList;
+    }
+
+    public void localCollection() {
+        R<RpcStatus>loadResult = serviceClient.loadCollection(LoadCollectionParam.newBuilder()
+                .withCollectionName(collectionName)
+                .withSyncLoad(true)
+                .build());
+        if (loadResult.getStatus() != R.Status.Success.getCode()){
+            throw new RuntimeException("加载至内存失败，原因:" + loadResult.getMessage());
+        }
     }
 
     /**
@@ -221,7 +233,7 @@ public class MilvusService {
     }
 
     @SneakyThrows
-    private Image toDomain(QueryResultsWrapper.RowRecord record) {
+    private SearchResult toResult(QueryResultsWrapper.RowRecord record) {
         if (Objects.isNull(record)) {
             return null;
         }
@@ -231,6 +243,8 @@ public class MilvusService {
             Object val = record.get(field.getFieldType().getName());
             field.getDomainField().set(domain, val);
         }
-        return domain;
+
+        Float distance = (Float) record.get("distance");
+        return new SearchResult(domain, distance);
     }
 }
