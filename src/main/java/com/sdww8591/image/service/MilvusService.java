@@ -40,6 +40,9 @@ public class MilvusService {
     @Value("${milvus.collection}")
     private String collectionName;
 
+    @Value("${milvus.nlist}")
+    private Integer nlist;
+
     @Value("${milvus.nprobe}")
     private Integer nprobe;
 
@@ -198,7 +201,7 @@ public class MilvusService {
                 .withMetricType(MetricType.IP)
                 .withSyncMode(Boolean.FALSE)
                 .withIndexType(IndexType.IVF_FLAT)
-                .withExtraParam(JSONUtil.createObj().set("nlist", "1024").toString())
+                .withExtraParam(JSONUtil.createObj().set("nlist", nlist).toString())
                 .build();
     }
 
