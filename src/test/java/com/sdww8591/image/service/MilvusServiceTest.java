@@ -32,4 +32,11 @@ public class MilvusServiceTest {
     public void flushIndex() {
         milvusService.flushIndex();
     }
+
+    @Test
+    public void initAll() {
+        deleteCollection();
+        initCollection();
+        initIndex();
+    }
 }

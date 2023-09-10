@@ -2,6 +2,8 @@ package com.sdww8591.image.util;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.datavec.image.loader.NativeImageLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -71,5 +74,18 @@ public class FileUtils {
                 }
             }
         }
+    }
+
+    public static Boolean validateFileType(File file) {
+        if (!file.exists()) {
+            return false;
+        }
+
+        if (file.isDirectory()) {
+            return false;
+        }
+
+        return Arrays.stream(NativeImageLoader.ALLOWED_FORMATS)
+                .anyMatch(suffix -> StringUtils.endsWith(file.getName(), suffix));
     }
 }
