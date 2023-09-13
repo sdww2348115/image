@@ -46,6 +46,8 @@ public class MilvusService {
     @Value("${milvus.nprobe}")
     private Integer nprobe;
 
+    private MetricType metricType = MetricType.IP;
+
     private MilvusServiceClient serviceClient = null;
 
     @PostConstruct
@@ -106,7 +108,7 @@ public class MilvusService {
                 // 设置返回最相似的图片数量
                 .withTopK(topk)
                 .withConsistencyLevel(ConsistencyLevelEnum.STRONG)
-                .withMetricType(MetricType.IP)
+                .withMetricType(metricType)
                 // 返回的字段信息
                 .withOutFields(CollectionField.FIELD_NAME)
                 // 设置向量字段的名称
@@ -198,7 +200,7 @@ public class MilvusService {
                 .withCollectionName(collectionName)
                 // 需要加索引的字段名称
                 .withFieldName("vector")
-                .withMetricType(MetricType.IP)
+                .withMetricType(metricType)
                 .withSyncMode(Boolean.FALSE)
                 .withIndexType(IndexType.IVF_FLAT)
                 .withExtraParam(JSONUtil.createObj().set("nlist", nlist).toString())
